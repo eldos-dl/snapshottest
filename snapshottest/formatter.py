@@ -1,11 +1,15 @@
 import six
 
-from .sorted_dict import SortedDict
 from .generic_repr import GenericRepr
+from .sorted_dict import SortedDict
 
 
 def trepr(s):
-    text = '\n'.join([repr(line)[1:-1] for line in s.split('\n')])
+    # In Python 2.x Unicode strings are represented as u'Hello World'.
+    text = '\n'.join(
+        [repr(line)[1:-1] if repr(line).startswith("'") else repr(line)[2:-1]
+         for line in s.split('\n')]
+    )
     quotes, dquotes = "'''", '"""'
     if quotes in text:
         if dquotes in text:
@@ -18,7 +22,7 @@ def trepr(s):
 class Formatter(object):
     def __init__(self, imports=None):
         self.types = {}
-        self.htchar = ' '*4
+        self.htchar = ' ' * 4
         self.lfchar = '\n'
         self.indent = 0
         self.imports = imports
